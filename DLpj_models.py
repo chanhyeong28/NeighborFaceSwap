@@ -7,6 +7,7 @@ from utils.align_face import align_img
 import torch.nn as nn
 import torchvision.transforms as T
 import os
+import io
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print('Running on device: {}'.format(device))
@@ -189,14 +190,19 @@ class Tuning(nn.Module):
         return x
 
 
+
 def process_image_dl(img, pparam_path): 
+    
+    with open(pparam_path, 'rb') as f:
+      buffer = io.BytesIO(f.read())
+
     data_transform = T.Compose([
         T.ToTensor(),
         T.Resize(244),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     
-    model_dl = torch.load(pparam_path, map_location=device)
+    model_dl = torch.load(buffer, map_location=device)
     model_dl.eval()
 
     imgs, _, points = detection(img)
