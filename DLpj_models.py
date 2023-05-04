@@ -196,6 +196,7 @@ class Tuning(nn.Module):
 with open("model_v1.pt", 'rb') as f:
   buffer = io.BytesIO(f.read())
 
+assert buffer != None, "What is buffer? Fuck up!"
 model_dl = torch.load(buffer, map_location=device)
 model_dl.eval()
 
