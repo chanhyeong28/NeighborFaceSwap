@@ -29,8 +29,10 @@ model = YoloDetector(target_size = 720, device = "cuda:0",min_face = 20)
 
 def detection(img, show=False, save_path=None, img_num=None):
   bboxes, points = model.predict(img)
+  assert points[1] == None, "points[0]???"
+  points = points[0]
   # crop and align image
-  faces = model.align(img, points[0])
+  faces = model.align(img, points)
   # show pictures
   if show == True:
     for face in faces:
@@ -158,7 +160,7 @@ def k(img, points, face_ids):
 def process_image(img, target, recog_thr=0.4, version=1, view_sim=False): 
     _, _, points = detection(img)
     face_ids, _ = preprocess(img, target, recog_thr, version)
-    result = k(img, points[0], face_ids)
+    result = k(img, points, face_ids)
 
     return result
 
@@ -179,8 +181,7 @@ class Tuning(nn.Module):
                 nn.Dropout(),
                 nn.Linear(128, 2),
                 nn.Softmax(dim=1)
-
-    )
+          )
 
     def forward(self,x):
         x = resnet(x)
@@ -188,18 +189,16 @@ class Tuning(nn.Module):
         return x
 
 
-path =  os.getcwd() + "/model_v1.pt"
-
-model_dl = torch.load(path, map_location=device)
-model_dl.eval()
-
-def process_image_dl(img): 
+def process_image_dl(img, pparam_path): 
     data_transform = T.Compose([
         T.ToTensor(),
         T.Resize(244),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     
+    model_dl = torch.load(pparam_path, map_location=device)
+    model_dl.eval()
+
     imgs, _, points = detection(img)
     crop_img_list = []
     for i in imgs:
@@ -219,7 +218,7 @@ def process_image_dl(img):
       if i == max_row_index:
         face_ids.append("charm_zu")
 
-    result = k(img, points[0], face_ids)
+    result = k(img, points, face_ids)
 
 
     return result
