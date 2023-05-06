@@ -170,7 +170,7 @@ def process_image(img, target, recog_thr=0.4, version=1, view_sim=False):
 
 
 ############################################ 수정
-import io
+# import io
 
 
 #defining the network
@@ -193,11 +193,11 @@ class Tuning(nn.Module):
         return x
 
 
-with open("model_v1.pt", 'rb') as f:
-  buffer = io.BytesIO(f.read())
+# with open("model_v1.pt", 'rb') as f:
+#   buffer = io.BytesIO(f.read())
 
-assert buffer != None, "What is buffer? Fuck up!"
-model_dl = torch.load(buffer, map_location=device)
+# assert buffer != None, "What is buffer? Fuck up!"
+model_dl = torch.load("model_v1.pt", map_location=device)
 model_dl.eval()
 
 

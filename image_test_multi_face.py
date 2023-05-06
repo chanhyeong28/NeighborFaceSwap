@@ -14,7 +14,7 @@ import pickle
 import torch
 import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
-import io
+
 
 
 
@@ -41,12 +41,13 @@ class Tuning(nn.Module):
         x = self.classifier(x)
         return x
 
+# import io
 
-with open("model_v1.pt", 'rb') as f:
-  buffer = io.BytesIO(f.read())
+# with open("model_v1.pt", 'rb') as f:
+#   buffer = io.BytesIO(f.read())
 
-assert buffer != None, "What is buffer? Fuck up!"
-model_dl = torch.load(buffer, map_location=device)
+# assert buffer != None, "What is buffer? Fuck up!"
+model_dl = torch.load("model_v1.pt", map_location=device)
 model_dl.eval()
 
 
