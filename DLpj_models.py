@@ -197,9 +197,8 @@ class Tuning(nn.Module):
 
 # with open("model_v1.pt", 'rb') as f:
 #   buffer = io.BytesIO(f.read())
-
 # assert buffer != None, "What is buffer? Fuck up!"
-model_dl = torch.load("model_v1.pt", map_location=device)
+model_dl = torch.load(os.getcwd() + "model_v1.pt", map_location=device)
 model_dl.eval()
 assert model_dl != None, "model_dl isn't defined"
 print(model_dl)
@@ -213,6 +212,7 @@ def process_image_dl(img):
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     
+
     imgs, _, points = detection(img)
     crop_img_list = []
     for i in imgs:
