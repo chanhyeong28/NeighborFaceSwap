@@ -175,23 +175,25 @@ def process_image(img, target, recog_thr=0.4, version=1, view_sim=False):
 
 #defining the network
 
+#defining the network
+
 class Tuning(nn.Module):
 
-    def __init__(self):
-        super(Tuning,self).__init__()
-        self.classifier = nn.Sequential(
-                nn.Linear(512, 128),
-                nn.ReLU(inplace=True),
-                nn.Dropout(),
-                nn.Linear(128, 2),
-                nn.Softmax(dim=1)
-          )
+  def __init__(self):
+    super(Tuning,self).__init__()
+    self.classifier = nn.Sequential(
+            nn.Linear(512, 128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(128, 2),
+            nn.Softmax(dim=1)
 
-    def forward(self,x):
-        x = resnet(x)
-        x = self.classifier(x)
-        return x
+    )
 
+  def forward(self, x):
+    x = resnet(x)
+    x = self.classifier(x)
+    return x
 
 # with open("model_v1.pt", 'rb') as f:
 #   buffer = io.BytesIO(f.read())
@@ -199,6 +201,8 @@ class Tuning(nn.Module):
 # assert buffer != None, "What is buffer? Fuck up!"
 model_dl = torch.load("model_v1.pt", map_location=device)
 model_dl.eval()
+assert model_dl != None, "model_dl isn't defined"
+print(model_dl)
 
 
 def process_image_dl(img): 

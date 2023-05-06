@@ -16,8 +16,6 @@ import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
 
 
-
-
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 resnet = InceptionResnetV1(pretrained='vggface2', device=device).eval()
 
@@ -26,30 +24,30 @@ resnet = InceptionResnetV1(pretrained='vggface2', device=device).eval()
 
 class Tuning(nn.Module):
 
-    def __init__(self):
-        super(Tuning,self).__init__()
-        self.classifier = nn.Sequential(
-                nn.Linear(512, 128),
-                nn.ReLU(inplace=True),
-                nn.Dropout(),
-                nn.Linear(128, 2),
-                nn.Softmax(dim=1)
-          )
+  def __init__(self):
+    super(Tuning,self).__init__()
+    self.classifier = nn.Sequential(
+            nn.Linear(512, 128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(128, 2),
+            nn.Softmax(dim=1)
 
-    def forward(self,x):
-        x = resnet(x)
-        x = self.classifier(x)
-        return x
+    )
 
+  def forward(self,x):
+    x = resnet(x)
+    x = self.classifier(x)
+    return x
 # import io
 
 # with open("model_v1.pt", 'rb') as f:
 #   buffer = io.BytesIO(f.read())
 
-# assert buffer != None, "What is buffer? Fuck up!"
 model_dl = torch.load("model_v1.pt", map_location=device)
 model_dl.eval()
-
+assert model_dl != None, "model_dl isn't defined"
+print(model_dl)
 
 def get_id_emb(id_net, id_img_path):
     id_img = cv2.imread(id_img_path)
