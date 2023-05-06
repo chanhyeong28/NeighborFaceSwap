@@ -9,43 +9,15 @@ from models.arcface import IRBlock, ResNet
 from utils.align_face import back_matrix, dealign, align_img
 from utils.util import paddle2cv, cv2paddle
 from utils.prepare_data import LandmarkModel
-from DLpj_models import process_image, process_image_dl
+from DLpj_models import process_image, process_image_dl, Tuning, model_dl
 import pickle
 import torch
 import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
 
-
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 resnet = InceptionResnetV1(pretrained='vggface2', device=device).eval()
 
-
-#defining the network
-
-class Tuning(nn.Module):
-
-  def __init__(self):
-    super(Tuning,self).__init__()
-    self.classifier = nn.Sequential(
-            nn.Linear(512, 128),
-            nn.ReLU(inplace=True),
-            nn.Dropout(),
-            nn.Linear(128, 2),
-            nn.Softmax(dim=1)
-
-    )
-
-  def forward(self,x):
-    x = resnet(x)
-    x = self.classifier(x)
-    return x
-# import io
-
-# with open("model_v1.pt", 'rb') as f:
-#   buffer = io.BytesIO(f.read())
-
-model_dl = torch.load("model_v1.pt", map_location=device)
-model_dl.eval()
 assert model_dl != None, "model_dl isn't defined"
 print(model_dl)
 
