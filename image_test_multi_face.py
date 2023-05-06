@@ -14,6 +14,8 @@ import pickle
 import torch
 import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
+import io
+
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
