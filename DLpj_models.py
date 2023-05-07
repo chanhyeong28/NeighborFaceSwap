@@ -249,9 +249,10 @@ def process_image_dl(img):
   _, bboxes, points = detection(img, show=False, save_path="./cropimg_tmp", img_num=0)
   print(points)
 
+  file_list=[]
   crop_img_list = []
   target_path = "./cropimg_tmp/*.*"
-  for file in glob.glob(target_path):
+  for file in sorted(glob.glob(target_path)):
     print(file)
     image_read = cv2.imread(file)
     crop_img_list.append(image_read)
