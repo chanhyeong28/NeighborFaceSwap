@@ -9,6 +9,9 @@ import torchvision.transforms as T
 import os
 import shutil
 import glob
+from PIL import Image
+
+
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print('Running on device: {}'.format(device))
