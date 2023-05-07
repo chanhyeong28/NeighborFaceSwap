@@ -31,7 +31,6 @@ model = YoloDetector(target_size = 720, device = "cuda:0",min_face = 20)
 
 def detection(img, show=False, save_path=None, img_num=None):
   bboxes, points = model.predict(img)
-  assert points[1] == None, "points[0]???"
   points = points[0]
   # crop and align image
   faces = model.align(img, points)
