@@ -269,26 +269,26 @@ def process_image_dl(img):
 
   output = model_dl(crop_img_tensor)
 
-  max_row_index = torch.argmax(output[:, 1])
-  max_row_value = output[max_row_index, 1]
+  # max_row_index = torch.argmax(output[:, 1])
+  # max_row_value = output[max_row_index, 1]
+
+  # face_ids = []
+
+  # for i in range(len(output)):
+  #   if (i == max_row_index) & (max_row_value >= 0.4):
+  #     face_ids.append("charm_zu")
+  #   else:
+  #     face_ids.append("unknown")
+
+  _, preds = torch.max(output, 1)
 
   face_ids = []
 
-  for i in range(len(output)):
-    if (i == max_row_index) & (max_row_value >= 0.4):
-      face_ids.append("charm_zu")
-    else:
+  for pred in preds:
+    if pred == 0:
       face_ids.append("unknown")
-
-    # _, preds = torch.max(output, 1)
-
-    # face_ids = []
-
-    # for pred in preds:
-    #   if pred == 0:
-    #     face_ids.append("unknown")
-    #   if pred == 1:
-    #     face_ids.append("charm_zu")
+    if pred == 1:
+      face_ids.append("charm_zu")
   result = k(img, points, face_ids)
 
 
