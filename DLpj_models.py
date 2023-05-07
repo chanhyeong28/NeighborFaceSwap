@@ -150,7 +150,7 @@ def preprocess(img, target, recog_thr, version) :
   return face_ids, probs
 
 
-def k(img, points, face_ids):
+def k(points, face_ids):
   point_list = []
 
   for (point, face_id) in zip(points, face_ids):
@@ -164,7 +164,7 @@ def k(img, points, face_ids):
 def process_image(img, target, recog_thr=0.4, version=1, view_sim=False): 
     _, _, points = detection(img)
     face_ids, _ = preprocess(img, target, recog_thr, version)
-    result = k(img, points, face_ids)
+    result = k(points, face_ids)
 
     return result
 
@@ -247,7 +247,8 @@ def process_image_dl(img):
 
   os.mkdir("./cropimg_tmp")
   _, bboxes, points = detection(img, show=False, save_path="./cropimg_tmp", img_num=0)
-    
+  print(points)
+
   crop_img_list = []
   target_path = "./cropimg_tmp/*.*"
   for file in glob.glob(target_path):
@@ -291,7 +292,7 @@ def process_image_dl(img):
       face_ids.append("unknown")
     if pred == 1:
       face_ids.append("charm_zu")
-  result = k(img, points, face_ids)
+  result = k(points, face_ids)
 
 
   return result

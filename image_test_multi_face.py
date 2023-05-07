@@ -123,6 +123,7 @@ def faces_align(landmarkModel, image_path, image_size=224):
     for path in img_list:
         img = cv2.imread(path)
         landmarks = landmarkModel.gets(img)
+        print(landmarks)
         for landmark in landmarks:
             if landmark is not None:
                 aligned_img, back_matrix = align_img(img, landmark, image_size)
@@ -155,6 +156,7 @@ def faces_align__(image_path, image_size=224):
     for path in img_list:
         img = cv2.imread(path)
         landmarks = process_image_dl(img)
+        print(landmarks)
         for landmark in landmarks:
             if landmark is not None:
                 aligned_img, back_matrix = align_img(img, landmark, image_size)
