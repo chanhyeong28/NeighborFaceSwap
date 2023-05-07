@@ -7,8 +7,8 @@ from utils.align_face import align_img
 import torch.nn as nn
 import torchvision.transforms as T
 import os
-
-
+import shutil
+import glob
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print('Running on device: {}'.format(device))
@@ -195,44 +195,99 @@ class Tuning(nn.Module):
     x = self.classifier(x)
     return x
 
-# with open("model_v1.pt", 'rb') as f:
-#   buffer = io.BytesIO(f.read())
-# assert buffer != None, "What is buffer? Fuck up!"
-model_dl = torch.load(os.getcwd() + "/model_v1.pt", map_location=device)
+model_dl = Tuning().to(device) ## GPU 사용
+
+model_dl.load_state_dict(torch.load(os.getcwd() + "/model_v2.pt"))
 model_dl.eval()
-assert model_dl != None, "model_dl isn't defined"
-print(model_dl)
+
+
+# def process_image_dl(img): 
+    
+#     data_transform = T.Compose([
+#         T.ToTensor(),
+#         T.Resize(244),
+#         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+#     ])
+    
+
+#     imgs, _, points = detection(img)
+#     crop_img_list = []
+#     for i in imgs:
+#       i = T.ToPILImage()(i)
+#       crop_img_list.append(data_transform(i))
+
+#     crop_img_tensor = torch.stack(crop_img_list, dim=0)
+#     crop_img_tensor = crop_img_tensor.to(device)
+#     output = model_dl(crop_img_tensor)
+#     max_row_index = torch.argmax(output[:, 0])
+
+#     face_ids = []
+
+#     for i in range(len(output)):
+#       if i != max_row_index:
+#         face_ids.append("unknown")
+#       if i == max_row_index:
+#         face_ids.append("charm_zu")
+
+#     result = k(img, points, face_ids)
+
+
+#     return result
 
 
 def process_image_dl(img): 
-    
-    data_transform = T.Compose([
+
+  data_transform = T.Compose([
         T.ToTensor(),
-        T.Resize(244),
+        T.Resize(224),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
+
+  os.mkdir("./cropimg_tmp")
+  _, bboxes, points = detection(img, show=False, save_path="./cropimg_tmp", img_num=0)
     
-
-    imgs, _, points = detection(img)
-    crop_img_list = []
-    for i in imgs:
-      i = T.ToPILImage()(i)
-      crop_img_list.append(data_transform(i))
-
-    crop_img_tensor = torch.stack(crop_img_list, dim=0)
-    crop_img_tensor = crop_img_tensor.to(device)
-    output = model_dl(crop_img_tensor)
-    max_row_index = torch.argmax(output[:, 0])
-
-    face_ids = []
-
-    for i in range(len(output)):
-      if i != max_row_index:
-        face_ids.append("unknown")
-      if i == max_row_index:
-        face_ids.append("charm_zu")
-
-    result = k(img, points, face_ids)
+  crop_img_list = []
+  target_path = "./cropimg_tmp/*.*"
+  for file in glob.glob(target_path):
+    image_read = cv2.imread(file)
+    crop_img_list.append(image_read)
 
 
-    return result
+  shutil.rmtree("./cropimg_tmp")
+
+  transformed_crop = []
+  for i in crop_img_list:
+    i = data_transform(i)
+    transformed_crop.append(i)
+  
+
+  crop_img_tensor = torch.stack(transformed_crop, dim=0)
+
+  crop_img_tensor = crop_img_tensor.to(device)
+
+  output = model_dl(crop_img_tensor)
+
+  max_row_index = torch.argmax(output[:, 1])
+  max_row_value = output[max_row_index, 1]
+
+  face_ids = []
+
+  for i in range(len(output)):
+    if (i == max_row_index) & (max_row_value >= 0.4):
+      face_ids.append("charm_zu")
+    else:
+      face_ids.append("unknown")
+
+    # _, preds = torch.max(output, 1)
+
+    # face_ids = []
+
+    # for pred in preds:
+    #   if pred == 0:
+    #     face_ids.append("unknown")
+    #   if pred == 1:
+    #     face_ids.append("charm_zu")
+  result = k(img, points, face_ids)
+
+
+  return result
