@@ -34,9 +34,8 @@ model = YoloDetector(target_size = 720, device = "cuda:0",min_face = 20)
 
 def detection(img, show=False, save_path=None, img_num=None):
   bboxes, points = model.predict(img)
-  points = points[0]
   # crop and align image
-  faces = model.align(img, points)
+  faces = model.align(img, points[0])
   # show pictures
   if show == True:
     for face in faces:
@@ -252,6 +251,7 @@ def process_image_dl(img):
   crop_img_list = []
   target_path = "./cropimg_tmp/*.*"
   for file in glob.glob(target_path):
+    print(file)
     image_read = cv2.imread(file)
     crop_img_list.append(image_read)
 
