@@ -268,6 +268,7 @@ def process_image_dl(img):
   crop_img_tensor = crop_img_tensor.to(device)
 
   output = model_dl(crop_img_tensor)
+  print(output)
 
   # max_row_index = torch.argmax(output[:, 1])
   # max_row_value = output[max_row_index, 1]
@@ -281,6 +282,7 @@ def process_image_dl(img):
   #     face_ids.append("unknown")
 
   _, preds = torch.max(output, 1)
+  print(preds)
 
   face_ids = []
 
